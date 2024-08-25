@@ -4,10 +4,18 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('./model/user')
 const Booking = require('./model/booking')
+const cors = require('cors');
 
 // Creating an Express application instance
 const app = express();
 const PORT = 3001;
+
+// Enable CORS for all routes
+app.use(cors({
+    origin: '*', // allow this origin to access the server
+    methods: 'GET,POST,PUT,DELETE', // allowed HTTP methods
+    credentials: true, // allow credentials (cookies, authorization headers, etc.)
+}));
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/mydatabase')
