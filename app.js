@@ -71,7 +71,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        res.status(200).json({ message: "login successful" });
+        res.status(200).json({ message: "login successful", userId: user._id, email: user.email, username: user.username });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -82,6 +82,7 @@ app.post('/api/bookings', async (req, res) => {
     try {
         // Create a new Bookings
         const newBookings = new Booking({
+            user_id: req.body.id,
             customer_name: req.body.customer_name,
             customer_mobileNo: req.body.customer_mobileNo,
             number_of_tickets: req.body.number_of_tickets
@@ -95,10 +96,16 @@ app.post('/api/bookings', async (req, res) => {
 });
 
 // Protected route to get user details
-app.get('/api/bookings', async (req, res) => {
+app.get('/api/bookings/:id?', async (req, res) => {
     try {
-        // Fetch user details using decoded token
-        const bookings = await Booking.find();
+        const userId = req.params.id;
+        let bookings;
+        if (userId) {
+            bookings = await Booking.find({ user_id: userId });
+        } else {
+            // Fetch user details using decoded token
+            bookings = await Booking.find();
+        }
         res.status(200).json(bookings);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
